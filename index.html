@@ -1,375 +1,178 @@
 <!DOCTYPE html>
-
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Champignons PROVENCE</title>
-
+<meta name="theme-color" content="#245b38">
+<title>Champignons Provence</title>
 <style>
-
-body {
-
-  margin:0;
-
-  font-family:Arial,sans-serif;
-
-  background:#f4f0e6;
-
-  color:#293b2b;
-
-}
-
-header {
-
-  background:#244b35;
-
-  color:white;
-
-  text-align:center;
-
-  padding:30px 15px;
-
-}
-
-header h1 {font-size:28px;margin:0 0 10px}
-
-header p {margin:0}
-
-main {
-
-  max-width:650px;
-
-  margin:25px auto;
-
-  padding:20px;
-
-}
-
-.card {
-
-  background:white;
-
-  padding:24px;
-
-  border-radius:15px;
-
-  box-shadow:0 3px 12px #0001;
-
-}
-
-button {
-
-  display:block;
-
-  width:100%;
-
-  padding:15px;
-
-  margin:12px 0;
-
-  border:0;
-
-  border-radius:9px;
-
-  background:#356b49;
-
-  color:white;
-
-  font-size:17px;
-
-  cursor:pointer;
-
-}
-
-button:hover {background:#244b35}
-
-.secondary {background:#777}
-
-#result {line-height:1.6}
-
-footer {
-
-  text-align:center;
-
-  padding:20px;
-
-  font-size:13px;
-
-}
-
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f3e9;color:#263b2c}
+header{background:#245b38;color:white;text-align:center;padding:28px 15px}
+header h1{font-size:27px;margin:5px}
+header p{margin:8px 0 0}
+main{max-width:650px;margin:auto;padding:18px}
+.card{background:white;border-radius:16px;padding:20px;margin:15px 0;box-shadow:0 3px 12px #0001}
+h2{color:#245b38}
+button{width:100%;padding:15px;margin:7px 0;border:0;border-radius:10px;background:#e7efe4;color:#245b38;font-size:16px;font-weight:bold;text-align:left}
+button:active{background:#c9dfc7}
+.primary{background:#245b38;color:white;text-align:center}
+.warning{background:#fff0dc;border-left:5px solid #d58a28;padding:14px;border-radius:8px;font-size:14px}
+.small{font-size:13px;color:#687568}
+footer{text-align:center;padding:25px;color:#687568;font-size:13px}
 </style>
-
 </head>
-
 <body>
 
 <header>
-
-<h1>🍄 Champignons PROVENCE</h1>
-
+<div style="font-size:42px">🍄</div>
+<h1>CHAMPIGNONS PROVENCE</h1>
 <p>Guide mycologique de Provence</p>
-
 </header>
 
 <main>
+<div class="card">
+<h2>Bienvenue en Provence !</h2>
+<p>Découvrez les champignons de nos forêts, garrigues et sous-bois grâce à une clé de détermination interactive.</p>
+<button class="primary" onclick="start()">COMMENCER LA DÉTERMINATION</button>
+</div>
 
 <div class="card">
-
-<div id="app">
-
-<h2>Bienvenue !</h2>
-
-<p>Découvrez les principaux champignons de Provence grâce à notre clé de détermination.</p>
-
-<p>Observez votre champignon avant de commencer.</p>
-
-<button onclick="start()">Commencer la détermination</button>
-
+<h2>Explorer les milieux</h2>
+<button onclick="show('pin')">🌲 Forêts de pins</button>
+<button onclick="show('chene')">🌳 Chênaies et forêts mixtes</button>
+<button onclick="show('garrigue')">🌿 Garrigue et terrains méditerranéens</button>
+<button onclick="show('prairie')">🌾 Prairies et pâturages</button>
 </div>
 
-</div>
+<div id="content"></div>
 
+<div class="warning">
+<strong>⚠️ Attention :</strong> certaines espèces sont mortelles. Cette application ne permet jamais de certifier qu'un champignon est comestible. Faites vérifier toute récolte par un pharmacien ou un mycologue compétent. Ne goûtez jamais un champignon pour l'identifier.
+</div>
 </main>
 
 <footer>
-
-Guide pédagogique – Champignons de Provence
-
+CHAMPIGNONS PROVENCE<br>
+Guide pédagogique de découverte de la mycologie
 </footer>
 
 <script>
-
-const questions = [
-
-{
-
-q:"Où avez-vous trouvé votre champignon ?",
-
-a:[
-
-["Dans une forêt de pins","pin"],
-
-["Sous des chênes ou des feuillus","feuillus"],
-
-["Dans une prairie ou un pré","prairie"],
-
-["Dans un autre milieu","autre"]
-
-]
-
-},
-
-{
-
-q:"Quelle est la forme du dessous du chapeau ?",
-
-a:[
-
-["Des tubes, comme une éponge","tubes"],
-
-["Des lamelles fines","lamelles"],
-
-["Des plis ou des veines","plis"],
-
-["Des aiguillons","aiguillons"],
-
-["Je ne sais pas","inconnu"]
-
-]
-
-},
-
-{
-
-q:"Quelle est la couleur dominante du chapeau ?",
-
-a:[
-
-["Brun ou marron","brun"],
-
-["Rouge ou orangé","rouge"],
-
-["Blanc ou crème","blanc"],
-
-["Jaune","jaune"],
-
-["Autre couleur","autre"]
-
-]
-
-},
-
-{
-
-q:"Le pied possède-t-il un anneau ?",
-
-a:[
-
-["Oui","oui"],
-
-["Non","non"],
-
-["Je ne sais pas","inconnu"]
-
-]
-
-}
-
-];
-
-let step=0;
-
-let answers=[];
+const content=document.getElementById('content');
 
 function start(){
-
-step=0;
-
-answers=[];
-
-showQuestion();
-
-}
-
-function showQuestion(){
-
-const q=questions[step];
-
-document.getElementById("app").innerHTML=`
-
-<h2>${q.q}</h2>
-
-<p>Étape ${step+1} sur ${questions.length}</p>
-
-${q.a.map((a,i)=>`
-
-<button onclick="answer('${a[1]}')">${a[0]}</button>
-
-`).join("")}
-
-<button class="secondary" onclick="back()">Retour</button>
-
-`;
-
-}
-
-function answer(value){
-
-answers.push(value);
-
-step++;
-
-if(step<questions.length) showQuestion();
-
-else showResult();
-
-}
-
-function back(){
-
-if(step>0){
-
-step--;
-
-answers.pop();
-
-showQuestion();
-
-}
-
-}
-
-function showResult(){
-
-let milieu=answers[0];
-
-let dessous=answers[1];
-
-let couleur=answers[2];
-
-let anneau=answers[3];
-
-let pistes=[];
-
-if(dessous==="tubes"){
-
-pistes.push("Famille des bolets : bolet bai, cèpe de Bordeaux, bolet à pied rouge et autres bolets.");
-
-}
-
-if(dessous==="lamelles"){
-
-pistes.push("Famille des champignons à lamelles : russules, lactaires, amanites, agarics et cortinaires.");
-
-}
-
-if(dessous==="plis"){
-
-pistes.push("Famille des chanterelles : girolles et espèces voisines.");
-
-}
-
-if(dessous==="aiguillons"){
-
-pistes.push("Famille des hydnes : notamment le pied-de-mouton.");
-
-}
-
-if(milieu==="pin"){
-
-pistes.push("Les forêts de pins provençales abritent notamment des lactaires, des bolets et des chanterelles.");
-
-}
-
-if(milieu==="feuillus"){
-
-pistes.push("Les chênaies et forêts de feuillus abritent notamment des cèpes, des amanites et des russules.");
-
-}
-
-if(milieu==="prairie"){
-
-pistes.push("Les prairies accueillent notamment des agarics et des marasmes.");
-
-}
-
-document.getElementById("app").innerHTML=`
-
-<div id="result">
-
-<h2>🍄 Votre première orientation</h2>
-
-<p>Selon vos observations, voici quelques familles à examiner :</p>
-
-${pistes.map(p=>`<p>• ${p}</p>`).join("")}
-
-<p><b>Couleur :</b> ${couleur}</p>
-
-<p><b>Anneau :</b> ${anneau}</p>
-
-<p><b>Milieu :</b> ${milieu}</p>
-
-<hr>
-
-<h3>⚠️ Attention importante</h3>
-
-<p>Cette clé donne uniquement des pistes de détermination. Elle ne permet pas d'identifier avec certitude un champignon ni de garantir sa comestibilité.</p>
-
-<p>Ne consommez jamais un champignon sur la base de cette application. Faites vérifier toute récolte par un pharmacien formé en mycologie ou un mycologue compétent.</p>
-
-<button onclick="start()">Nouvelle détermination</button>
-
+content.innerHTML=`
+<div class="card">
+<h2>Étape 1 – Où pousse votre champignon ?</h2>
+<button onclick="question(1,'pin')">Sous les pins</button>
+<button onclick="question(1,'chene')">Sous les chênes ou feuillus</button>
+<button onclick="question(1,'garrigue')">Dans la garrigue</button>
+<button onclick="question(1,'prairie')">Dans une prairie</button>
+<button onclick="question(1,'bois')">Dans un autre milieu boisé</button>
 </div>`;
-
+content.scrollIntoView({behavior:'smooth'});
 }
 
+function question(n,habitat){
+if(n===1){
+content.innerHTML=`
+<div class="card">
+<h2>Étape 2 – Le dessous du chapeau</h2>
+<p>Quelle est son apparence ?</p>
+<button onclick="question(2,'lamelles','${habitat}')">Des lamelles</button>
+<button onclick="question(2,'tubes','${habitat}')">Des petits trous ou tubes (comme une éponge)</button>
+<button onclick="question(2,'aiguillons','${habitat}')">Des aiguillons ou petites dents</button>
+<button onclick="question(2,'plis','${habitat}')">Des plis ou des veines</button>
+<button onclick="question(2,'inconnu','${habitat}')">Je ne sais pas</button>
+<button onclick="start()">Retour</button>
+</div>`;
+}
+else if(n===2){
+let types={
+lamelles:"Les champignons à lamelles",
+tubes:"Les bolets et champignons à tubes",
+aiguillons:"Les hydnes et champignons à aiguillons",
+plis:"Les chanterelles et champignons à plis",
+inconnu:"Les champignons à observer plus précisément"
+};
+content.innerHTML=`
+<div class="card">
+<h2>Étape 3 – La forme générale</h2>
+<p>Comment est votre champignon ?</p>
+<button onclick="question(3,'classique','${habitat}','${arguments[2]}')">Un chapeau et un pied</button>
+<button onclick="question(3,'boule','${habitat}','${arguments[2]}')">Une boule sans pied apparent</button>
+<button onclick="question(3,'corail','${habitat}','${arguments[2]}')">En forme de corail ou de branche</button>
+<button onclick="question(3,'autre','${habitat}','${arguments[2]}')">Une autre forme</button>
+<button onclick="start()">Recommencer</button>
+</div>`;
+}
+else{
+let formes={
+classique:"Champignon à chapeau et pied",
+boule:"Champignon globuleux",
+corail:"Champignon ramifié",
+autre:"Champignon de forme particulière"
+};
+let habitats={
+pin:"forêts de pins",
+chene:"chênaies et feuillus",
+garrigue:"garrigue",
+prairie:"prairies",
+bois:"milieux boisés"
+};
+let dessous={
+lamelles:"à lamelles",
+tubes:"à tubes",
+aiguillons:"à aiguillons",
+plis:"à plis",
+inconnu:"dont le dessous reste à examiner"
+};
+content.innerHTML=`
+<div class="card">
+<h2>Première orientation</h2>
+<p>Vous avez observé un ${formes[arguments[1]]||'champignon'} poussant en ${habitats[habitat]||'milieu naturel'}, avec un dessous ${dessous[arguments[2]]||'à examiner'}.</p>
+<p>Ces critères permettent de commencer une recherche, mais ne suffisent pas à déterminer une espèce.</p>
+<h3>Quelques genres à étudier</h3>
+<p>Selon les caractéristiques complémentaires, vous pourrez notamment explorer :</p>
+<ul>
+<li>Amanites</li>
+<li>Russules</li>
+<li>Lactaires</li>
+<li>Cortinaires</li>
+<li>Bolets</li>
+<li>Chanterelles</li>
+<li>Clitocybes</li>
+<li>Hygrophores</li>
+</ul>
+<div class="warning">Ne considérez aucune de ces indications comme une identification certaine. Plusieurs genres comprennent des espèces toxiques ou mortelles.</div>
+<button class="primary" onclick="start()">Nouvelle détermination</button>
+</div>`;
+}
+content.scrollIntoView({behavior:'smooth'});
+}
+
+function show(milieu){
+let noms={
+pin:"Forêts de pins",
+chene:"Chênaies et forêts mixtes",
+garrigue:"Garrigue provençale",
+prairie:"Prairies et pâturages"
+};
+let descriptions={
+pin:"Les pinèdes provençales abritent notamment des lactaires, des bolets, des russules et des amanites.",
+chene:"Les chênaies sont des milieux riches en russules, cortinaires, amanites et bolets.",
+garrigue:"La garrigue méditerranéenne accueille notamment des espèces adaptées aux sols secs et calcaires.",
+prairie:"Les prairies peuvent accueillir des agarics, des hygrophores, des lépiotes et de nombreuses autres espèces."
+};
+content.innerHTML=`
+<div class="card">
+<h2>${noms[milieu]}</h2>
+<p>${descriptions[milieu]}</p>
+<p>La présence des espèces dépend de la saison, de la pluie, du sol et des arbres environnants.</p>
+<button class="primary" onclick="start()">Identifier un champignon</button>
+</div>`;
+content.scrollIntoView({behavior:'smooth'});
+}
 </script>
-
 </body>
-
 </html>
